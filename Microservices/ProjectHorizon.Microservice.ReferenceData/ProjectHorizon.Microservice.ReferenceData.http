@@ -1,0 +1,6 @@
+@ProjectHorizon.Microservice.ReferenceData_HostAddress = http://localhost:5111
+
+GET {{ProjectHorizon.Microservice.ReferenceData_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

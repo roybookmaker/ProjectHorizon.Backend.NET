@@ -1,0 +1,6 @@
+@ProjectHorizon.Backend.NET_HostAddress = http://localhost:5037
+
+GET {{ProjectHorizon.Backend.NET_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
