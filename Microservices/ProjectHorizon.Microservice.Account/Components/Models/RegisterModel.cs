@@ -2,6 +2,7 @@
 {
     public sealed record RegisterModel
         (
+        string Fullname,
         string Username,
         string Password,
         string Email

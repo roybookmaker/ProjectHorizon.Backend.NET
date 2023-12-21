@@ -15,6 +15,7 @@ namespace ProjectHorizon.Shared.Library.Enums
         public const int PasswordEmpty = 9;
         public const int RecoveryEmailSent = 11;
         public const int RecoveryEmailFailed = 12;
+        public const int ResetPasswordSuccess = 13;
 
         //user
         public const int UserNotFound = 4;
@@ -25,6 +26,5 @@ namespace ProjectHorizon.Shared.Library.Enums
 
         //token
         public const int TokenExpired = 8;
-
     }
 }
