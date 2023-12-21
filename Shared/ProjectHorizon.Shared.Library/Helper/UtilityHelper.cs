@@ -88,17 +88,10 @@ namespace ProjectHorizon.Shared.Library.Helper
             byte[] salt = GenerateRandomByte();
 
             byte[] saltedValue = Encoding.UTF8.GetBytes(inputString + Convert.ToBase64String(salt));
+            byte[] hashedBytes = SHA512.HashData(saltedValue);
 
-            using (var sha512 = SHA512.Create())
-            {
-                byte[] hashedBytes = sha512.ComputeHash(saltedValue);
-
-                byte[][] result = new byte[2][];
-                result[0] = hashedBytes;
-                result[1] = salt;
-
-                return result;
-            }
+            byte[][] result = [hashedBytes, salt];
+            return result;
         }
         //--//
 
@@ -114,10 +107,7 @@ namespace ProjectHorizon.Shared.Library.Helper
 
             string hashedValue = BCrypt.Net.BCrypt.HashPassword(inputString, salt);
 
-            string[][] result = new string[2][];
-            result[0] = new string[] { hashedValue };
-            result[1] = new string[] { salt };
-
+            string[][] result = [[hashedValue], [salt]];
             return result;
         }
         //--//
@@ -150,10 +140,7 @@ namespace ProjectHorizon.Shared.Library.Helper
                 argon2.AssociatedData = associateddata;
                 //argon2.KnownSecret = Encoding.UTF8.GetBytes("ProjectHorizon"); //this need to be created later
 
-                byte[][] result = new byte[2][];
-                result[0] = argon2.GetBytes(128);
-                result[1] = salt;
-
+                byte[][] result = [argon2.GetBytes(128), salt];
                 return result;
             }
         }

@@ -83,7 +83,7 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
                 var updateToken = "UPDATE account SET password = :password, salt = :salt, token = :token, updateddate = CURRENT_TIMESTAMP WHERE username = :username";
                 byte[][] newPassAndSalt = UtilityHelper.GenerateArgon2Hash(password);
                 var parameters = new Dapper.DynamicParameters();
-                
+
                 parameters.Add("token", newToken);
                 parameters.Add("username", username);
                 parameters.Add("password", newPassAndSalt[0]);
@@ -101,11 +101,12 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
         {
             try
             {
-                var query = "INSERT INTO account (username, password, salt, email) VALUES (:username, :password, :salt, :email)";
+                var query = "INSERT INTO account (fullname, username, password, salt, email) VALUES (:fullname, :username, :password, :salt, :email)";
 
                 byte[][] newPassAndSalt = UtilityHelper.GenerateArgon2Hash(model.Password);
 
                 var parameters = new Dapper.DynamicParameters();
+                parameters.Add("fullname", model.Fullname);
                 parameters.Add("username", model.Username);
                 parameters.Add("password", newPassAndSalt[0]);
                 parameters.Add("salt", newPassAndSalt[1]);
@@ -124,7 +125,7 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
         {
             try
             {
-                var query = "SELECT id, username, salt, token, email, status, createddate, updateddate FROM account WHERE email = :email";
+                var query = "SELECT id, email FROM account WHERE email = :email";
                 var parameters = new Dapper.DynamicParameters();
                 parameters.Add("email", model.Email);
 
@@ -145,6 +146,41 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
                     return QueryResult.Ok(EnumLibrary.RecoveryEmailSent);
                 else
                     return QueryResult.Error(EnumLibrary.RecoveryEmailFailed);
+            }
+            catch (Exception ex)
+            {
+                return QueryResult.Error(ex.Message);
+            }
+        }
+
+        public async Task<QueryResult> ResetUserPass(ResetModel model)
+        {
+            try
+            {
+                var query = "SELECT * FROM recoveryrequest WHERE email = :id";
+                var parameters = new Dapper.DynamicParameters();
+                parameters.Add("id", model.Id);
+
+                var user = await _databaseHelper.GetAsync<RecoveryDTO>(query, parameters);
+
+                if (user == null)
+                    return QueryResult.Error(EnumLibrary.UserNotFound);
+
+                string newToken = UtilityHelper.GenerateRandomString();
+
+                var updateToken = "UPDATE account SET password = :password, salt = :salt, token = :token, updateddate = CURRENT_TIMESTAMP WHERE id = :id";
+                byte[][] newPassAndSalt = UtilityHelper.GenerateArgon2Hash(model.NewPassword);
+                var parameters2 = new Dapper.DynamicParameters();
+
+                parameters2.Add("token", newToken);
+                parameters2.Add("id", model.Id);
+                parameters2.Add("password", newPassAndSalt[0]);
+                parameters2.Add("salt", newPassAndSalt[1]);
+
+                var process = await _databaseHelper.EditData(updateToken, parameters2);
+
+                return QueryResult.Ok(new { Token = newToken }, EnumLibrary.ResetPasswordSuccess);
+
             }
             catch (Exception ex)
             {

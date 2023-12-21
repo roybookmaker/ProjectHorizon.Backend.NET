@@ -11,5 +11,7 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
         public Task<QueryResult> LoginUser(LoginModel model);
 
         public Task<QueryResult> RecoveryUser(RecoveryModel model);
+
+        public Task<QueryResult> ResetUserPass(ResetModel model);
     }
 }
