@@ -9,22 +9,22 @@ namespace ProjectHorizon.Shared.Library.Enums
     public class EnumLibrary
     {
         //login process
-        public const int LoginSuccessByPassword = 1;
-        public const int LoginSuccessByToken = 2;
-        public const int PasswordInvalid = 3;
-        public const int PasswordEmpty = 9;
-        public const int RecoveryEmailSent = 11;
-        public const int RecoveryEmailFailed = 12;
-        public const int ResetPasswordSuccess = 13;
+        public const string LoginSuccessByPassword = "Login successful by password";
+        public const string LoginSuccessByToken = "Login successful by token";
+        public const string PasswordInvalid = "Invalid password";
+        public const string PasswordEmpty = "Password is empty";
+        public const string RecoveryEmailSent = "Recovery email sent";
+        public const string RecoveryEmailFailed = "Recovery email failed";
+        public const string ResetPasswordSuccess = "Password reset successful";
 
         //user
-        public const int UserNotFound = 4;
-        public const int UserAlreadyExists = 5;
-        public const int UserCreated = 6;
-        public const int UserUpdated = 7;
-        public const int UserRegistered = 10;
+        public const string UserNotFound = "User not found";
+        public const string UserAlreadyExists = "User already exists";
+        public const string UserCreated = "User created";
+        public const string UserUpdated = "User updated";
+        public const string UserRegistered = "User registered";
 
         //token
-        public const int TokenExpired = 8;
+        public const string TokenExpired = "Token has expired";
     }
 }
