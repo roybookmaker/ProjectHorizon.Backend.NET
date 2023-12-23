@@ -19,6 +19,11 @@
             return new QueryResult() { IsSuccessful = true, Payload = payload, Code = code };
         }
 
+        public static QueryResult Ok(object payload, string message)
+        {
+            return new QueryResult() { IsSuccessful = true, Payload = payload, Message = message };
+        }
+
         public static QueryResult Error(int errorCode)
         {
             return new QueryResult() { IsSuccessful = true, ErrorCode = errorCode };

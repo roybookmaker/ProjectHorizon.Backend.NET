@@ -113,7 +113,13 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
                 parameters.Add("email", model.Email);
 
                 var process = await _databaseHelper.EditData(query, parameters);
-                return QueryResult.Ok(EnumLibrary.UserRegistered);
+                if(process == 1)
+                {
+                    return QueryResult.Ok(EnumLibrary.UserCreated);
+                } else
+                {
+                    return QueryResult.Error(EnumLibrary.UserAlreadyExists);
+                }
             }
             catch (Exception ex)
             {
