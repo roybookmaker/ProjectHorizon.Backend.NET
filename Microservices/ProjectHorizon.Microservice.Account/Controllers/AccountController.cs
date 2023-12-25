@@ -27,5 +27,11 @@ namespace ProjectHorizon.Microservice.Account.Controllers
         {
             return await GetQueryResultResponse(query);
         }
+
+        [HttpPost("Reset")]
+        public async Task<ActionResult> Reset([FromBody] ResetModel query)
+        {
+            return await GetQueryResultResponse(query);
+        }
     }
 }

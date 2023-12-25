@@ -38,6 +38,7 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
                     else
                     {
                         string newToken = UtilityHelper.GenerateRandomString();
+                        await UpdateToken(model.Username, "", newToken);
                         return QueryResult.Ok(new { Token = newToken }, EnumLibrary.LoginSuccessByToken);
                     }
                 }
@@ -80,16 +81,30 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
         {
             try
             {
-                var updateToken = "UPDATE account SET password = :password, salt = :salt, token = :token, updateddate = CURRENT_TIMESTAMP WHERE username = :username";
-                byte[][] newPassAndSalt = UtilityHelper.GenerateArgon2Hash(password);
-                var parameters = new Dapper.DynamicParameters();
+                if(password != "")
+                {
+                    var updateToken = "UPDATE account SET password = :password, salt = :salt, token = :token, updateddate = CURRENT_TIMESTAMP WHERE username = :username";
+                    byte[][] newPassAndSalt = UtilityHelper.GenerateArgon2Hash(password);
+                    var parameters = new Dapper.DynamicParameters();
 
-                parameters.Add("token", newToken);
-                parameters.Add("username", username);
-                parameters.Add("password", newPassAndSalt[0]);
-                parameters.Add("salt", newPassAndSalt[1]);
+                    parameters.Add("token", newToken);
+                    parameters.Add("username", username);
+                    parameters.Add("password", newPassAndSalt[0]);
+                    parameters.Add("salt", newPassAndSalt[1]);
 
-                var process = await _databaseHelper.EditData(updateToken, parameters);
+                    var process = await _databaseHelper.EditData(updateToken, parameters);
+                }
+                else
+                {
+                    var updateToken = "UPDATE account SET token = :token, updateddate = CURRENT_TIMESTAMP WHERE username = :username";
+                    var parameters = new Dapper.DynamicParameters();
+
+                    parameters.Add("token", newToken);
+                    parameters.Add("username", username);
+
+                    var process = await _databaseHelper.EditData(updateToken, parameters);
+                }
+                
             }
             catch
             {
@@ -101,6 +116,17 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
         {
             try
             {
+                var selectQuery = "SELECT id FROM account WHERE username = :username OR email = :email";
+                var parametersSelect = new Dapper.DynamicParameters();
+                parametersSelect.Add("username", model.Username);
+                parametersSelect.Add("email", model.Email);
+                var processSelect = await _databaseHelper.GetAsync<AccountDTO>(selectQuery, parametersSelect);
+
+                if (processSelect != null)
+                {
+                    return QueryResult.Error(EnumLibrary.UserAlreadyExists);
+                }
+
                 var query = "INSERT INTO account (fullname, username, password, salt, email) VALUES (:fullname, :username, :password, :salt, :email)";
 
                 byte[][] newPassAndSalt = UtilityHelper.GenerateArgon2Hash(model.Password);
@@ -163,14 +189,21 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
         {
             try
             {
-                var query = "SELECT * FROM recoveryrequest WHERE email = :id";
+                var query = "SELECT * FROM recoveryrequest WHERE id = :id and recoverykey = :recoverykey ";
                 var parameters = new Dapper.DynamicParameters();
                 parameters.Add("id", model.Id);
+                parameters.Add("recoverykey", model.RecoveryKey);
 
-                var user = await _databaseHelper.GetAsync<RecoveryDTO>(query, parameters);
+                var key = await _databaseHelper.GetAsync<RecoveryDTO>(query, parameters);
 
-                if (user == null)
-                    return QueryResult.Error(EnumLibrary.UserNotFound);
+                if (key == null)
+                {
+                    return QueryResult.Error(EnumLibrary.RecoveryKeyNotFound);
+                }
+                else if (key.ExpiryDate < DateTime.Now || key.Used == true) //probably needed to fix this to follow the timezone of user, or probably not since backend sometimes in the same place as the database and probably using the same timezone
+                {
+                    return QueryResult.Error(EnumLibrary.TokenExpired);
+                }
 
                 string newToken = UtilityHelper.GenerateRandomString();
 
@@ -179,11 +212,16 @@ namespace ProjectHorizon.Microservice.Account.Components.Repositories
                 var parameters2 = new Dapper.DynamicParameters();
 
                 parameters2.Add("token", newToken);
-                parameters2.Add("id", model.Id);
+                parameters2.Add("id", key.Userid);
                 parameters2.Add("password", newPassAndSalt[0]);
                 parameters2.Add("salt", newPassAndSalt[1]);
-
                 var process = await _databaseHelper.EditData(updateToken, parameters2);
+
+                var updateRecovery = "UPDATE recoveryrequest SET used = true WHERE id = :id and recoverykey = :recoverykey";
+                var parameters3 = new Dapper.DynamicParameters();
+                parameters3.Add("id", model.Id);
+                parameters3.Add("recoverykey", model.RecoveryKey);
+                var process2 = await _databaseHelper.EditData(updateRecovery, parameters3);
 
                 return QueryResult.Ok(new { Token = newToken }, EnumLibrary.ResetPasswordSuccess);
 

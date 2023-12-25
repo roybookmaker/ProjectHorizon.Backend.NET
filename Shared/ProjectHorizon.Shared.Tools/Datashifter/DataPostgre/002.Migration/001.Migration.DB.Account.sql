@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS account (
     username VARCHAR(100) NOT NULL UNIQUE,
     password BYTEA NOT NULL,
     salt BYTEA NOT NULL,
+    fullname VARCHAR(256) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     token VARCHAR(128),
     tokenupdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

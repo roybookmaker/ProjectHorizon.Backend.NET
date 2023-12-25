@@ -3,6 +3,7 @@
     public sealed record ResetModel
         (
         Guid Id,
+        string RecoveryKey,
         string NewPassword
         );
 }
