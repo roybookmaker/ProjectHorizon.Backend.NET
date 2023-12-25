@@ -5,7 +5,7 @@ using ProjectHorizon.Shared.Library.Common;
 
 namespace ProjectHorizon.Microservice.Account.Components.Consumers
 {
-    public class AccountConsumer : IConsumer<LoginModel>, IConsumer<RegisterModel>, IConsumer<RecoveryModel>
+    public class AccountConsumer : IConsumer<LoginModel>, IConsumer<RegisterModel>, IConsumer<RecoveryModel>, IConsumer<ResetModel>
     {
         public IAccountRepository _accountRepository;
 
@@ -32,6 +32,13 @@ namespace ProjectHorizon.Microservice.Account.Components.Consumers
         {
             var recoveryProcess = await _accountRepository.RecoveryUser(context.Message);
             await context.RespondAsync(recoveryProcess);
+            return;
+        }
+
+        public async Task Consume(ConsumeContext<ResetModel> context)
+        {
+            var resetProcess = await _accountRepository.ResetUserPass(context.Message);
+            await context.RespondAsync(resetProcess);
             return;
         }
     }

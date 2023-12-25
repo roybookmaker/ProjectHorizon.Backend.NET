@@ -15,6 +15,7 @@ namespace ProjectHorizon.Shared.Library.Enums
         public const string PasswordEmpty = "Password is empty";
         public const string RecoveryEmailSent = "Recovery email sent";
         public const string RecoveryEmailFailed = "Recovery email failed";
+        public const string RecoveryKeyNotFound = "Recovery key not found";
         public const string ResetPasswordSuccess = "Password reset successful";
 
         //user

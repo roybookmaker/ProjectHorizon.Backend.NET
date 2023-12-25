@@ -5,6 +5,7 @@
         public Guid Id { get; set; }
         public Guid Userid { get; set; }
         public string? RecoveryKey { get; set; }
+        public bool Used { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ExpiryDate { get; set; }
     }
