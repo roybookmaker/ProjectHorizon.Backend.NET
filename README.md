@@ -3,7 +3,7 @@
 This project is meant to be used as a showcase piece for my interviews. This project should go together with the frontend part [Project Horizon Frontend](https://github.com/roybookmaker/ProjectHorizon.Frontend.Angular).
 For the full list of my projects showpieces, visit [Project Horizon List](https://github.com/stars/roybookmaker/lists/project-horizon).
 This project was generated with [.NET Core](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8) version 8.0.
-Development started in 18 December 2023. Due to my limited time and current IRL jobs, the development of this project quite slow. But i will keep expanding until i implement all the feature.
+Development started in 18 December 2023. Due to my limited time and current IRL jobs, the development of this project quite slow. But i will keep expanding this project until i implement all the feature.
 
 ## Feature currently in this project
 
